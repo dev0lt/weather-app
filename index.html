@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <div class="wrapper">
+      <h1>Weather App</h1>
+      <form action="">
+        <label for="city">Wpisz szukaną lokalizację:</label>
+        <input type="text" id="city" />
+        <button>OK</button>
+      </form>
+      <p class="name"></p>
+      <div class="temp_container">
+        <p class="temp"></p>
+        <img class="weather_icon" src="" alt="weather_icon" />
+      </div>
+      <p class="desc"></p>
+      <div class="lowhigh">
+        <p class="temp_min"></p>
+        <p class="temp_max"></p>
+      </div>
+      <p class="pressure"></p>
+      <p class="clouds"></p>
+      <p class="rain"></p>
+      <div class="forecast"></div>
+    </div>
+    <script src="script.js"></script>
+  </body>
+</html>
