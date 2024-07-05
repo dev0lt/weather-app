@@ -49,17 +49,19 @@ const getWeather = async function (city) {
 
     const data = await weather.json();
     const data2 = await forecast.json();
-    console.log(data);
-    console.log(data2);
+    // console.log(data);
+    // console.log(data2);
     return [data, data2];
   } catch (err) {
-    console.log(err);
+    console.log(err.message);
   }
 };
 
 const render = function (result) {
   let res = result[0];
+
   icon.src = `http://openweathermap.org/img/w/${res.weather[0].icon}.png`;
+
   temp.textContent = `${res.main.temp}°C`;
   tempmin.textContent = `${res.main.temp_min}°C`;
   tempmax.textContent = `${res.main.temp_max}°C`;
@@ -75,39 +77,63 @@ const renderForecast = function (result) {
 
   let today = new Date().toISOString();
 
+  let currentDay;
+
   let weather_container = [];
 
-  res.list.forEach((x) => {
-    if (x.dt_txt.slice(0, 10) === today.slice(0, 10)) {
-      weather_container.push(x);
+  /* Opcja A: temperatura tylko do końca obecnego dnia
+  res.list.forEach((item) => {
+    if (item.dt_txt.slice(0, 10) === today.slice(0, 10)) {
+      weather_container.push(item);
     }
   });
+*/
 
-  console.log(weather_container);
-  weather_container.forEach((x) => {
+  // Opcja B: 5 kolejnych ticków od tego momentu
+
+  for (let i = 0; i < 5; i++) {
+    weather_container.push(res.list[i]);
+  }
+
+  // console.log(weather_container);
+  weather_container.forEach((hour) => {
+    let time = new Date(hour.dt * 1000);
+    let time2 = time.getHours();
+
+    let timeIcon;
+    if (time2 > 4 && time2 < 20) {
+      timeIcon = "🌞";
+    } else {
+      timeIcon = "🌚";
+    }
+
+    if (hour.dt_txt.slice(0, 10) === today.slice(0, 10)) {
+      currentDay = "today";
+    } else {
+      currentDay = "tomorrow";
+    }
+
     let div = document.createElement("div");
     div.className = "forecast_data";
-    div.innerHTML = `<p>${x.main.temp}°C</p>`;
+    div.innerHTML = `<p>${currentDay}</p>
+    <p>${time2}:00${time2 > 12 ? "pm" : "am"}</p>
+    <p>${timeIcon}</p>
+    <p>${hour.main.temp}°C</p>`;
     forecast_container.append(div);
   });
 };
 
-getWeather().then((res) => {
-  render(res);
-  renderForecast(res);
-});
+getWeather()
+  .then((res) => {
+    render(res);
+    renderForecast(res);
+  })
+  .catch((err) => console.log(err));
 
 btnSubmit.addEventListener("click", function (e) {
   e.preventDefault();
-  console.log(input.value);
-  getWeather(input.value).then((res) => render(res));
-});
-/*
-let unix = new Date();
-let date = unix.getDate();
-console.log(unix.toISOString());
 
-let dup = "2024-07-05 12:00:00";
-let dup2 = "2024-07-05";
-console.log(dup.slice(0, 10) === dup2.slice(0, 10));
-*/
+  getWeather(input.value)
+    .then((res) => render(res))
+    .catch((err) => console.log(err));
+});
