@@ -14,6 +14,8 @@ const btnSubmit = document.querySelector("button");
 const input = document.querySelector("input");
 const icon = document.querySelector("img");
 const forecast_container = document.querySelector(".forecast");
+const wrapper = document.querySelector(".wrapper");
+const loading = document.querySelector(".loading");
 
 const getPosition = async function () {
   return new Promise(function (resolve, reject) {
@@ -21,8 +23,14 @@ const getPosition = async function () {
   });
 };
 
+const loadingScreen = function () {
+  loading.style.display = "flex";
+  wrapper.style.display = "none";
+};
+
 const getWeather = async function (city) {
   try {
+    loadingScreen();
     const pos = await getPosition();
     let lat = await pos.coords.latitude;
     let lng = await pos.coords.longitude;
@@ -125,6 +133,8 @@ const renderForecast = function (result) {
 
 getWeather()
   .then((res) => {
+    loading.style.display = "none";
+    wrapper.style.display = "flex";
     render(res);
     renderForecast(res);
   })
@@ -134,6 +144,10 @@ btnSubmit.addEventListener("click", function (e) {
   e.preventDefault();
 
   getWeather(input.value)
-    .then((res) => render(res))
+    .then((res) => {
+      loading.style.display = "none";
+      wrapper.style.display = "flex";
+      render(res);
+    })
     .catch((err) => console.log(err));
 });
